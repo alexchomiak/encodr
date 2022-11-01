@@ -6,6 +6,8 @@ import (
 	"github.com/alexchomiak/encodr/cmd/encodr/model"
 	"github.com/alexchomiak/encodr/cmd/encodr/resource"
 
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,7 +22,15 @@ func main() {
 		return c.SendStatus(200)
 	})
 
+	var port string
+	val, ok := os.LookupEnv("ENCODR_PORT")
+	if ok {
+		port = val
+	} else {
+		port = "80"
+	}
+
 	resource.NewQRCodeResource().BindRoutes(app)
 
-	app.Listen(":80")
+	app.Listen(":" + port)
 }
