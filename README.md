@@ -18,3 +18,12 @@ Run service
 ```
 docker run -p 8080:80 encodr
 ```
+
+
+## Build for Multi-Platform using Docker buildx (used for Raspberry PI)
+
+```
+docker buildx build \
+--push \
+--platform linux/arm/v7,linux/arm64/v8,linux/amd64  --tag alexchomiak/encodr:buildx-latest .
+```
