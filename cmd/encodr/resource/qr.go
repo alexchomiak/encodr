@@ -5,6 +5,9 @@ import (
 	"time"
 
 	"github.com/alexchomiak/encodr/cmd/encodr/model"
+	"github.com/skip2/go-qrcode"
+
+	urllib "net/url"
 
 	"github.com/alexchomiak/encodr/cmd/encodr/controller"
 	"github.com/gofiber/fiber/v2"
@@ -25,6 +28,9 @@ func (q *QRCodeResource) getQRCode(c *fiber.Ctx) error {
 
 	}
 
+	// * URL Decode value
+	decodedUrl, err := urllib.QueryUnescape(url)
+
 	size := c.Query("size")
 	var sizeInt int64
 
@@ -34,7 +40,23 @@ func (q *QRCodeResource) getQRCode(c *fiber.Ctx) error {
 		sizeInt, _ = strconv.ParseInt(size, 10, 64)
 	}
 
-	file, err := q.Controller.Encode(url, sizeInt)
+	// * Recovery level
+	recovery := c.Query("recovery")
+	var recoveryLevel qrcode.RecoveryLevel
+	switch recovery {
+	case "L":
+		recoveryLevel = qrcode.Low
+	case "M":
+		recoveryLevel = qrcode.Medium
+	case "H":
+		recoveryLevel = qrcode.High
+	case "Hplus":
+		recoveryLevel = qrcode.Highest
+	default:
+		recoveryLevel = qrcode.High
+	}
+
+	file, err := q.Controller.Encode(decodedUrl, sizeInt, recoveryLevel)
 
 	if err != nil {
 		c.JSON(&model.ErrorResponse{

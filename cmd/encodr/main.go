@@ -22,5 +22,5 @@ func main() {
 
 	resource.NewQRCodeResource().BindRoutes(app)
 
-	app.Listen(":80")
+	app.Listen(":8080")
 }
